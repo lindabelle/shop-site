@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<h1>Главная страница</h1>
+{% for description in descriptions %}
+        <h1>{{ description.name}}</h1>
+        <h2>{{description.brand}}</h2>
+        <p>{{ description.description }}</p>
+{% endfor %}
+</body>
+</html>
