@@ -1,0 +1,18 @@
+{% extends "scent_shop/base.html" %}
+{% block title %}<title>Basket</title>{% endblock %}
+{% block content %}
+    <h1>Basket</h1>
+    {% if basket %}
+
+    <ul>
+        {% for book in basket %}
+        <li>
+            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a> ({{product.brand}})
+        </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    {% else %}
+        <p>В корзине нет товара</p>
+    {% endif %}
+{% endblock %}
