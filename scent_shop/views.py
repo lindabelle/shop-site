@@ -1,51 +1,75 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from .models import Pics
+from django.shortcuts import render, get_object_or_404
+from .models import Category, Product, Brand, Basket, User
+from django.views.generic import ListView, DetailView
+from django.http import HttpResponse, HttpResponseRedirect
 
 
-descriptions = [
-            {
-                'name': 'Fat Electrician',
-                'brand': 'ELDO',
-                'description': 'White vetiver splattered on the asphalt of Time Square”, the fragrance juxtaposes the dry, earthy transparency of vetiver with the sweeter, balsamic smokiness of opoponax and myrrh.',
-                'price': 140,
-                'year': 2009
-                },
-                {
-                'name': 'Like This',
-                'brand': 'ELDO',
-                'description': 'A radical fragrance that soothes the fire under the milky skin. A warm perfume, cooled by ginger. If this perfume was a light, it would be an orange glow.',
-                'price': 140,
-                'year': 2010
-
-            },
-]
+class ProductListView(ListView):
+    model = Product
+    template_name = 'scent_shop/home.html'
+    context_object_name = 'products'
+    paginate_by = 6
 
 
-
-def home(request):
-    images = Pics.objects
-    return render(request, "scent_shop/home.html", {'images': images})
+class ProductDetailView(DetailView):
+    model = Product
 
 
-def brand(request):
-    return render(request, "scent_shop/brand.html")
+class CategoryProductListView(ListView):
+    model = Product
+    template_name = 'scent_shop/category.html'
+    context_object_name = 'products'
+    paginate_by = 6
+
+    def get_queryset(self):
+        category = get_object_or_404(Category, pk=self.kwargs.get("pk"))
+        return Product.objects.filter(category=category)
 
 
-def gourmet(request):
-    return render(request, "scent_shop/gourmet.html")
+class BrandProductListView(ListView):
+    model = Product
+    template_name = 'scent_shop/category.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        brand = get_object_or_404(Brand, pk=self.kwargs.get("pk"))
+        return Product.objects.filter(brand=brand)
 
 
-def floral(request):
-    return render(request, "scent_shop/floral.html")
+class Search(ListView):
+    template_name = "scent_shop/base.html"
+    context_object_name = "products"
+    paginate_by = 6
+
+    def get_queryset(self):
+        return Product.objects.filter(name__icontains=self.request.GET.get("q"))
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q")
+        return context
 
 
-def woody(request):
-    return render(request, "scent_shop/woody.html")
+def basket(request):
+    content = {}
+    return render(request, 'scent_shop/basket.html', content)
 
 
-def oriental(request):
-    return render(request, "scent_shop/oriental.html")
+def basket_add(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    basket = Basket.objects.filter(product=product).first()
+    user = self.request.user
+    if not basket:
+        basket = Basket(product=product)
+    basket.item_total += 1
+    basket.save()
+    return HttpResponseRedirect(reverse('scent_shop:basket'))
+
+
+def basket_remove(request, pk):
+    content = {}
+    return render(request, 'scent_shop/basket.html', content)
+
 
 def base(request):
     return render(request, "scent_shop/base.html")

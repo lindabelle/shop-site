@@ -1,16 +1,13 @@
 from django.urls import path
-from scent_shop import views
-from django.conf import settings
-from django.conf.urls.static import static
 
+import scent_shop.views
+from scent_shop.views import ProductListView,  ProductDetailView, CategoryProductListView, BrandProductListView, Search
 
-urlpatterns=[
-    path("", views.home, name="scent_shop-home"),
-    path("brand/", views.brand, name="scent_shop-brand"),
-    path("gourmet/", views.gourmet, name="scent_shop-gourmet"),
-    path("floral/", views.floral, name="scent_shop-floral"),
-    path("woody/", views.woody, name="scent_shop-woody"),
-    path("oriental/", views.oriental, name="scent_shop-oriental"),
-    path("base/", views.base, name="scent_shop-base"),
-
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns = [
+    path('', ProductListView.as_view(), name="shop-home"),
+    path("search/", Search.as_view(), name="search"),
+    path("product/<int:pk>/", ProductDetailView.as_view(), name="shop-detail"),
+    path("brand/<int:pk>/", BrandProductListView.as_view(), name="shop-brand"),
+    path("category/<int:pk>/", CategoryProductListView.as_view(), name="shop-category"),
+    path("basket/", scent_shop.views.basket, name="basket")
+]

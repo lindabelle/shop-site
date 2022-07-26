@@ -3,23 +3,23 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 
-class Pics(models.Model):
-    image = models.ImageField(upload_to='images/')
-    title = models.CharField(max_length=80)
-
-
 class Category(models.Model):
+    name = models.CharField(max_length=200, db_index=True)
+
+
+class Brand(models.Model):
     name = models.CharField(max_length=200, db_index=True)
 
 
 class Product(models.Model):
     name = models.CharField(max_length=250)
-    brand = models.CharField(max_length=250)
-    description = models.TextField(max_length=2000)
+    brand = models.ForeignKey(Brand, related_name='products', on_delete=models.CASCADE)
+    description = models.TextField(max_length=2000,blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField()
     year = models.CharField(max_length=4)
+    image = models.ImageField(upload_to='media', blank=True)
 
 
 class Comment(models.Model):
@@ -41,6 +41,7 @@ class Basket(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item_total = models.DecimalField(max_digits=9, decimal_places=0)
+
 
 
 
